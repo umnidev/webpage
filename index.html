@@ -13,29 +13,47 @@
             height: 100vh;
             background-color: white;
             color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             font-family: monospace;
         }
         
         .container {
-            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            text-align: left;
         }
         
-        .prompt {
+        .terminal-line {
             font-size: 24px;
+            margin: 10px 0;
         }
         
         .cursor {
-            /* background-color: black; */
-            /* color: white; */
             animation: blink 1s infinite;
         }
         
         @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
+        }
+        
+        .result {
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        .result a {
+            color: black;
+            text-decoration: underline;
+        }
+        
+        .result a:hover {
+            background-color: black;
+            color: white;
+        }
+        
+        .hidden {
+            display: none;
         }
         
         /* Font classes for random selection */
@@ -77,15 +95,28 @@
 </head>
 <body>
     <div class="container">
-        <div class="prompt">
+        <div class="terminal-line">
             > <span id="typewriter"></span><span class="cursor" id="cursor">_</span>
+        </div>
+        <div class="terminal-line result hidden" id="result">
+            Get in touch: <a href="mailto:hello@umni.dev">hello@umni.dev</a>
         </div>
     </div>
 
     <script>
         // TYPING SPEED - adjust this to make typing faster/slower
         const TYPING_SPEED = 20; // milliseconds per character (lower = faster)
-        const text = "python get-in-touch.py";
+        const DELAY_BEFORE_RESULT = 1000; // delay before showing result (in milliseconds)
+        
+        // Array of random commands
+        const commands = [
+            "python get-contact.py",
+            "bash get-contact.sh",
+            "node get-contact.js"
+        ];
+        
+        // Randomly select a command
+        const command = commands[Math.floor(Math.random() * commands.length)];
         
         // Array of font classes
         // const fonts = ['font-bitcount', 'font-honk', 'font-inter', 'font-rubik-dirt'];
@@ -100,13 +131,20 @@
         
         const typewriter = document.getElementById('typewriter');
         const cursor = document.getElementById('cursor');
+        const result = document.getElementById('result');
         let i = 0;
 
         function typeWriter() {
-            if (i < text.length) {
-                typewriter.textContent += text.charAt(i);
+            if (i < command.length) {
+                typewriter.textContent += command.charAt(i);
                 i++;
                 setTimeout(typeWriter, TYPING_SPEED + Math.random() * TYPING_SPEED);
+            } else {
+                // Command finished typing, hide cursor and show result
+                setTimeout(() => {
+                    cursor.style.display = 'none';
+                    result.classList.remove('hidden');
+                }, DELAY_BEFORE_RESULT);
             }
         }
 
