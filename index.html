@@ -5,110 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>umni.dev</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bitcount:wght@100..900&family=Honk&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik+Dirt&display=swap');
         
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             height: 100vh;
-            background-color: #300a24;
-            color: #ffffff;
-            font-family: 'Ubuntu Mono', monospace;
-            font-size: 16px;
-            overflow: hidden;
-        }
-        
-        .terminal {
-            background-color: #300a24;
-            border-radius: 6px;
-            border: 1px solid #444;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            height: 100%;
+            background-color: white;
+            color: black;
             display: flex;
-            flex-direction: column;
-        }
-        
-        .terminal-header {
-            background: linear-gradient(to bottom, #5c5c5c, #3c3c3c);
-            border-radius: 6px 6px 0 0;
-            height: 30px;
-            display: flex;
+            justify-content: center;
             align-items: center;
-            padding: 0 10px;
-            border-bottom: 1px solid #2c2c2c;
+            font-family: monospace;
         }
         
-        .terminal-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .terminal-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        
-        .close { background-color: #ff5f56; }
-        .minimize { background-color: #ffbd2e; }
-        .maximize { background-color: #27ca3f; }
-        
-        .terminal-title {
-            flex: 1;
+        .container {
             text-align: center;
-            color: #ccc;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .terminal-body {
-            flex: 1;
-            padding: 20px;
-            background-color: #300a24;
-            border-radius: 0 0 6px 6px;
         }
         
         .prompt {
-            color: #8ae234;
-            margin-right: 8px;
-        }
-        
-        .username {
-            color: #8ae234;
-        }
-        
-        .at {
-            color: #ffffff;
-        }
-        
-        .hostname {
-            color: #8ae234;
-        }
-        
-        .colon {
-            color: #ffffff;
-        }
-        
-        .path {
-            color: #729fcf;
-        }
-        
-        .dollar {
-            color: #ffffff;
-        }
-        
-        .command-line {
-            margin-bottom: 10px;
-        }
-        
-        .typed-text {
-            color: #ffffff;
+            font-size: 24px;
         }
         
         .cursor {
-            background-color: #ffffff;
-            color: #300a24;
+            /* background-color: black; */
+            /* color: white; */
             animation: blink 1s infinite;
         }
         
@@ -117,33 +38,66 @@
             51%, 100% { opacity: 0; }
         }
         
-        .typewriter {
-            display: inline;
+        /* Font classes for random selection */
+        .font-bitcount {
+            font-family: "Bitcount", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings:
+                "slnt" 0,
+                "CRSV" 0.5,
+                "ELSH" 0,
+                "ELXP" 0;
+        }
+        
+        .font-honk {
+            font-family: "Honk", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings:
+                "MORF" 15,
+                "SHLN" 50;
+        }
+        
+        .font-inter {
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+        
+        .font-rubik-dirt {
+            font-family: "Rubik Dirt", system-ui;
+            font-weight: 400;
+            font-style: normal;
         }
     </style>
 </head>
 <body>
-    <div class="terminal">
-        <div class="terminal-header">
-            <div class="terminal-buttons">
-                <div class="terminal-button close"></div>
-                <div class="terminal-button minimize"></div>
-                <div class="terminal-button maximize"></div>
-            </div>
-            <div class="terminal-title">Terminal</div>
-        </div>
-        <div class="terminal-body">
-            <div class="command-line">
-                <span class="prompt">
-                    <span class="username">user</span><span class="at">@</span><span class="hostname">ubuntu</span><span class="colon">:</span><span class="path">~</span><span class="dollar">$</span>
-                </span>
-                <span class="typed-text typewriter" id="typewriter"></span><span class="cursor" id="cursor">█</span>
-            </div>
+    <div class="container">
+        <div class="prompt">
+            > <span id="typewriter"></span><span class="cursor" id="cursor">_</span>
         </div>
     </div>
 
     <script>
-        const text = "umni.dev";
+        // TYPING SPEED - adjust this to make typing faster/slower
+        const TYPING_SPEED = 20; // milliseconds per character (lower = faster)
+        const text = "python get-in-touch.py";
+        
+        // Array of font classes
+        // const fonts = ['font-bitcount', 'font-honk', 'font-inter', 'font-rubik-dirt'];
+        const fonts = ['font-bitcount'];
+        
+        // Randomly select a font
+        const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
+        
+        // Apply the random font to the container
+        const container = document.querySelector('.container');
+        container.className = `container ${randomFont}`;
+        
         const typewriter = document.getElementById('typewriter');
         const cursor = document.getElementById('cursor');
         let i = 0;
@@ -152,10 +106,7 @@
             if (i < text.length) {
                 typewriter.textContent += text.charAt(i);
                 i++;
-                setTimeout(typeWriter, 100 + Math.random() * 100); // Random typing speed for realism
-            } else {
-                // After typing is complete, keep the cursor blinking
-                cursor.style.animation = 'blink 1s infinite';
+                setTimeout(typeWriter, TYPING_SPEED + Math.random() * TYPING_SPEED);
             }
         }
 
