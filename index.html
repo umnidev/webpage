@@ -168,14 +168,10 @@
         // Array of random commands
         const commands = [
             "kubectl apply -f production.yml",
-            // "python train_llm.py --dataset=client-data", 
             "terraform deploy --env=production",
-            // "neo4j-admin import --nodes=knowledge-graph.csv",
             "docker build -t umni/ai-solution .",
             "ansible-playbook scale-infrastructure.yml",
             "python generate_insights.py --model=gpt4",
-            // "git push origin feature/knowledge-extraction",
-            // "sparql-query --graph=enterprise-ontology",
             "helm upgrade --install umni-stack ./charts"
         ];
         
