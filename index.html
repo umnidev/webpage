@@ -19,7 +19,7 @@
         .container {
             position: absolute;
             top: 50%;
-            left: 50px;
+            left: 30%;
             text-align: left;
         }
         
@@ -99,7 +99,6 @@
             > <span id="typewriter"></span><span class="cursor" id="cursor">_</span>
         </div>
         <div class="terminal-line result hidden" id="result">
-            Get in touch: <a href="mailto:hello@umni.dev">hello@umni.dev</a>
         </div>
     </div>
 
@@ -110,13 +109,94 @@
         
         // Array of random commands
         const commands = [
-            "python get-contact.py",
-            "bash get-contact.sh",
-            "node get-contact.js"
+            "kubectl apply -f production.yml",
+            // "python train_llm.py --dataset=client-data", 
+            "terraform deploy --env=production",
+            // "neo4j-admin import --nodes=knowledge-graph.csv",
+            "docker build -t umni/ai-solution .",
+            "ansible-playbook scale-infrastructure.yml",
+            "python generate_insights.py --model=gpt4",
+            // "git push origin feature/knowledge-extraction",
+            // "sparql-query --graph=enterprise-ontology",
+            "helm upgrade --install umni-stack ./charts"
         ];
         
         // Randomly select a command
         const command = commands[Math.floor(Math.random() * commands.length)];
+        
+        // Random hook messages
+        const hookMessages = [
+            "All systems operational. Ready to deploy?",
+            "System ready. Let's build something great!"
+        ];
+        const randomHook = hookMessages[Math.floor(Math.random() * hookMessages.length)];
+        
+        // Result lines to show sequentially
+        const resultLines = [
+            { text: "🚀 Setting up Project Leadership", delay: 700 },
+            { text: "✅ Initializing DevOps & Infrastructure", delay: 800 },
+            { text: "🤖 Loading AI & Machine Learning", delay: 600 }, 
+            { text: "🧠 Connecting Knowledge Graphs", delay: 900 },
+            { text: "", delay: 0 },
+            { text: randomHook, delay: 0, typewriter: true },
+            { text: `Get in touch: <a href="mailto:hello@umni.dev">hello@umni.dev</a>`, delay: 0 }
+        ];
+        
+        let currentLineIndex = 0;
+        
+        function showNextResultLine() {
+            if (currentLineIndex < resultLines.length) {
+                const lineData = resultLines[currentLineIndex];
+                const lineText = lineData.text;
+                const delay = lineData.delay;
+                const useTypewriter = lineData.typewriter;
+                
+                if (lineText === "") {
+                    result.innerHTML += "<br>";
+                    currentLineIndex++;
+                    setTimeout(showNextResultLine, 200);
+                } else if (useTypewriter) {
+                    // Typewriter effect for this line
+                    const linePrefix = currentLineIndex > 0 ? "<br>" : "";
+                    result.innerHTML += linePrefix;
+                    
+                    let charIndex = 0;
+                    function typeChar() {
+                        if (charIndex < lineText.length) {
+                            // Get current HTML and add the next character
+                            const lines = result.innerHTML.split("<br>");
+                            lines[lines.length - 1] = lineText.substring(0, charIndex + 1);
+                            result.innerHTML = lines.join("<br>");
+                            charIndex++;
+                            setTimeout(typeChar, TYPING_SPEED + Math.random() * TYPING_SPEED);
+                        } else {
+                            // Finished typing this line
+                            currentLineIndex++;
+                            setTimeout(showNextResultLine, 800); // Delay before next line
+                        }
+                    }
+                    typeChar();
+                } else if (lineText.includes('<a href=')) {
+                    // Contact email - show immediately
+                    result.innerHTML += (currentLineIndex > 0 ? "<br>" : "") + lineText;
+                    currentLineIndex++;
+                } else {
+                    // Service line - show with loading then done
+                    const linePrefix = currentLineIndex > 0 ? "<br>" : "";
+                    result.innerHTML += linePrefix + lineText + "...";
+                    
+                    setTimeout(() => {
+                        // Replace the last line with "...done"
+                        const lines = result.innerHTML.split("<br>");
+                        lines[lines.length - 1] = lineText + "...done";
+                        result.innerHTML = lines.join("<br>");
+                        
+                        currentLineIndex++;
+                        setTimeout(showNextResultLine, 300);
+                    }, delay);
+                }
+            }
+        }
         
         // Array of font classes
         // const fonts = ['font-bitcount', 'font-honk', 'font-inter', 'font-rubik-dirt'];
@@ -144,6 +224,7 @@
                 setTimeout(() => {
                     cursor.style.display = 'none';
                     result.classList.remove('hidden');
+                    showNextResultLine(); // Start showing result lines
                 }, DELAY_BEFORE_RESULT);
             }
         }
