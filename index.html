@@ -13,6 +13,16 @@
             background-color: #000;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+        
+        .page {
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -55,6 +65,23 @@
             51%, 100% { opacity: 0; }
         }
         
+        .click-indicator {
+            position: absolute;
+            display: none;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #fff;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 3s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.7; }
+        }
+        
         /* Mobile-specific styles */
         @media screen and (max-width: 768px) {
             .container {
@@ -90,47 +117,113 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- <div class="title">umni.dev</div> -->
-        <div class="terminal-line">
-            <span class="prompt"></span> <span id="typewriter"></span>
+    <!-- Main Page -->
+    <div class="page" id="page1">
+        <div class="container">
+            <div class="terminal-line">
+                <span class="prompt"></span> <span id="typewriter"></span>
+            </div>
         </div>
+        <div class="click-indicator">Click to see contact info</div>
     </div>
 
     <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
     <script>
-        
-        const COLORS = [
-            "#000000",
-            "#14213D",
-            "#FCA311",
-            "#E5E5E5",
-            "#FFFFFF"
-        ]
-
-
         // Array of random commands
         const commands = [
             "Programming is an aesthetic experience much like composing poetry or music.<br>— Donald Knuth (Author, The Art of Computer Programming)",
-            "Any fool can write code that a computer can understand. Good programmers write code that humans can understand. <br>— Martin Fowler (Chief Scientist, ThoughtWorks)",
             "Clean code always looks like it was written by someone who cares. <br>— Robert C. Martin (Author, Clean Code)",
+            "The function of good software is to make the complex appear to be simple. — Grady Booch (UML co-creator)",
+            "Truth can only be found in one place: the code. — Robert C. Martin (“Uncle Bob”) (Author, Clean Code)"
         ];
         
-        // Randomly select a command
-        const command = commands[Math.floor(Math.random() * commands.length)];
+        const contactMessage = "Get in touch: hello@umni.dev";
         
         // Initialize typewriter with the library
         const typewriter = new Typewriter('#typewriter', {
             loop: false,
             delay: 20,
             cursor: '|',
-            
         });
 
-        // Type the selected command
+        let typewriterFinished = false;
+        let usedQuotes = [];
+        let showingContact = false;
+        let clickEnabled = true;
+
+        // Function to get a new random quote
+        function getNewQuote() {
+            if (usedQuotes.length >= commands.length) {
+                usedQuotes = []; // Reset if all quotes have been used
+            }
+            
+            let availableQuotes = commands.filter((_, index) => !usedQuotes.includes(index));
+            let randomIndex = Math.floor(Math.random() * availableQuotes.length);
+            let selectedQuote = availableQuotes[randomIndex];
+            let originalIndex = commands.indexOf(selectedQuote);
+            
+            usedQuotes.push(originalIndex);
+            return selectedQuote;
+        }
+
+        // Function to type text with typewriter effect
+        function typeText(text) {
+            clickEnabled = false; // Disable clicking during typing
+            const typewriterElement = document.getElementById('typewriter');
+            typewriterElement.innerHTML = '';
+            
+            const newTypewriter = new Typewriter('#typewriter', {
+                loop: false,
+                delay: 20,
+                cursor: '|',
+            });
+            
+            newTypewriter
+                .typeString(text)
+                .callFunction(() => {
+                    typewriterFinished = true;
+                    // Enable clicking after typing is done, with a small delay for contact info
+                    if (showingContact) {
+                        setTimeout(() => {
+                            clickEnabled = true;
+                        }, 1000); // 1 second delay when showing contact
+                    } else {
+                        clickEnabled = true; // Immediate for quotes
+                    }
+                })
+                .start();
+        }
+
+        // Get initial quote and start typing
+        const initialCommand = getNewQuote();
         typewriter
-            .typeString(command)
+            .typeString(initialCommand)
+            .callFunction(() => {
+                typewriterFinished = true;
+                clickEnabled = true;
+            })
             .start();
+
+        // Function to toggle between contact and quotes
+        function toggleContent() {
+            if (!clickEnabled) return; // Prevent clicking when disabled
+            
+            if (showingContact) {
+                // Show new quote
+                const newCommand = getNewQuote();
+                typeText(newCommand);
+                showingContact = false;
+            } else {
+                // Show contact info
+                typeText(contactMessage);
+                showingContact = true;
+            }
+        }
+
+        // Add click event listener
+        document.addEventListener('click', () => {
+            toggleContent();
+        });
     </script>
     
 </body>
