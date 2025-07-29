@@ -74,7 +74,7 @@
             font-size: 14px;
             color: #fff;
             opacity: 0;
-            animation: fadeIn 1s ease-in-out 3s forwards;
+            animation: fadeIn 0.2s ease-in-out 3s forwards;
         }
         
         @keyframes fadeIn {
@@ -114,6 +114,34 @@
                 font-size: 12px;
             }
         }
+        
+        /* Email hover effects */
+        .email-link {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .email-link:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        /* Copy feedback animation */
+        .copy-feedback {
+            color: gainsboro;
+            font-size: 0.8em;
+            padding-left: 10px;
+            animation: fadeOut 2s ease-in-out forwards;
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -137,7 +165,7 @@
             "Truth can only be found in one place: the code. — Robert C. Martin (“Uncle Bob”) (Author, Clean Code)"
         ];
         
-        const contactMessage = "Get in touch: hello@umni.dev";
+        const contactMessage = 'Get in touch → <span class="email-link">hello@umni.dev</span>';
         
         // Initialize typewriter with the library
         const typewriter = new Typewriter('#typewriter', {
@@ -220,8 +248,61 @@
             }
         }
 
+        // Function to copy email to clipboard
+        function copyEmail() {
+            const email = 'hello@umni.dev';
+            
+            // Try to copy to clipboard
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(email).then(() => {
+                    showCopyFeedback();
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopyFeedback();
+                } catch (err) {
+                    console.error('Failed to copy: ', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+        
+        // Function to show copy feedback
+        function showCopyFeedback() {
+            const typewriterElement = document.getElementById('typewriter');
+            const originalContent = typewriterElement.innerHTML;
+            
+            // Show checkmark with fade-out animation
+            typewriterElement.innerHTML = 'Get in touch → <span class="email-link">hello@umni.dev</span><span class="copy-feedback">✓</span>';
+            
+            // Restore original content after animation completes
+            setTimeout(() => {
+                typewriterElement.innerHTML = originalContent;
+            }, 2000);
+        }
+        
         // Add click event listener
-        document.addEventListener('click', () => {
+        document.addEventListener('click', (event) => {
+            // Handle email link clicks
+            if (event.target.classList.contains('email-link')) {
+                event.preventDefault();
+                event.stopPropagation();
+                copyEmail();
+                return;
+            }
+            
+            // Handle regular page clicks
             toggleContent();
         });
     </script>
