@@ -6,43 +6,48 @@
     <title>umni.dev</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='2' y='24' font-family='monospace' font-size='24' font-weight='900' fill='white' stroke='black' stroke-width='3'%3E%26gt;_%3C/text%3E%3C/svg%3E" type="image/svg+xml">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bitcount:wght@100..900&family=Honk&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik+Dirt&display=swap');
-        
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
-            background-color: white;
-            color: black;
-            font-family: monospace;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .container {
-            position: absolute;
-            top: 30%;
-            left: 50%;
-            transform: translateX(-50%);
             text-align: left;
             width: 90%;
-            max-width: 800px;
+            max-width: 600px;
             padding: 0 20px;
             box-sizing: border-box;
         }
         
         .title {
-            font-size: clamp(32px, 8vw, 58px);
-            margin-bottom: clamp(40px, 10vw, 100px);
+            font-size: 24px;
+            margin-bottom: 40px;
+            color: #fff;
+            font-weight: normal;
         }
         
         .terminal-line {
-            font-size: clamp(16px, 4vw, 24px);
-            margin: 10px 0;
+            font-size: 16px;
+            line-height: 1.4;
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
         
+        .prompt {
+            color: #fff;
+            opacity: 0.5;
+        }
+        
         .cursor {
             animation: blink 1s infinite;
+            color: #fff;
         }
         
         @keyframes blink {
@@ -50,243 +55,83 @@
             51%, 100% { opacity: 0; }
         }
         
-        .result {
-            color: #666;
-            margin-top: 20px;
-        }
-        
-        .result a {
-            color: black;
-            text-decoration: underline;
-            word-break: break-word;
-        }
-        
-        .result a:hover {
-            background-color: black;
-            color: white;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* Font classes for random selection */
-        .font-bitcount {
-            font-family: "Bitcount", system-ui;
-            font-optical-sizing: auto;
-            font-weight: 400;
-            font-style: normal;
-            font-variation-settings:
-                "slnt" 0,
-                "CRSV" 0.5,
-                "ELSH" 0,
-                "ELXP" 0;
-        }
-        
-        .font-honk {
-            font-family: "Honk", system-ui;
-            font-optical-sizing: auto;
-            font-weight: 400;
-            font-style: normal;
-            font-variation-settings:
-                "MORF" 15,
-                "SHLN" 50;
-        }
-        
-        .font-inter {
-            font-family: "Inter", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 400;
-            font-style: normal;
-        }
-        
-        .font-rubik-dirt {
-            font-family: "Rubik Dirt", system-ui;
-            font-weight: 400;
-            font-style: normal;
-        }
-        
         /* Mobile-specific styles */
         @media screen and (max-width: 768px) {
             .container {
-                top: 20%;
                 width: 95%;
                 padding: 0 15px;
             }
             
             .title {
-                margin-bottom: clamp(30px, 8vw, 60px);
-                margin-left: clamp(10px, 3vw, 40px);
+                font-size: 20px;
+                margin-bottom: 30px;
             }
             
             .terminal-line {
-                font-size: clamp(14px, 4.5vw, 20px);
-                line-height: 1.4;
+                font-size: 14px;
             }
         }
         
         /* Very small screens */
         @media screen and (max-width: 480px) {
             .container {
-                top: 15%;
                 width: 98%;
                 padding: 0 10px;
             }
             
             .title {
-                margin-left: clamp(5px, 2vw, 20px);
+                font-size: 18px;
             }
             
             .terminal-line {
-                font-size: clamp(12px, 4vw, 18px);
-            }
-        }
-        
-        /* Large screens */
-        @media screen and (min-width: 1200px) {
-            .container {
-                max-width: 900px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="title">umni.dev</div>
+        <!-- <div class="title">umni.dev</div> -->
         <div class="terminal-line">
-            > <span id="typewriter"></span><span class="cursor" id="cursor">_</span>
-        </div>
-        <div class="terminal-line result hidden" id="result">
+            <span class="prompt"></span> <span id="typewriter"></span>
         </div>
     </div>
 
+    <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
     <script>
-        // TYPING SPEED - adjust this to make typing faster/slower
-        const TYPING_SPEED = 20; // milliseconds per character (lower = faster)
-        const DELAY_BEFORE_RESULT = 1000; // delay before showing result (in milliseconds)
         
+        const COLORS = [
+            "#000000",
+            "#14213D",
+            "#FCA311",
+            "#E5E5E5",
+            "#FFFFFF"
+        ]
+
+
         // Array of random commands
         const commands = [
-            "kubectl apply -f production.yml",
-            "terraform deploy --env=production",
-            "docker build -t umni/ai-solution .",
-            "ansible-playbook scale-infrastructure.yml",
-            "python generate_insights.py --model=gpt4",
-            "helm upgrade --install umni-stack ./charts"
+            "Programming is an aesthetic experience much like composing poetry or music.<br>— Donald Knuth (Author, The Art of Computer Programming)",
+            "Any fool can write code that a computer can understand. Good programmers write code that humans can understand. <br>— Martin Fowler (Chief Scientist, ThoughtWorks)",
+            "Clean code always looks like it was written by someone who cares. <br>— Robert C. Martin (Author, Clean Code)",
         ];
         
         // Randomly select a command
         const command = commands[Math.floor(Math.random() * commands.length)];
         
-        // Random hook messages
-        const hookMessages = [
-            "All systems operational. Ready to deploy?",
-            "System ready. Let's build something great!"
-        ];
-        const randomHook = hookMessages[Math.floor(Math.random() * hookMessages.length)];
-        
-        // Result lines to show sequentially
-        const resultLines = [
-            { text: "🚀 Setting up Project Leadership", delay: 700 },
-            { text: "🎯 Implementing Agile Methodologies", delay: 700 },
-            { text: "✅ Initializing DevOps & Infrastructure", delay: 800 },
-            { text: "🤖 Loading AI & Machine Learning", delay: 600 }, 
-            { text: "🧠 Connecting Knowledge Graphs", delay: 1000 },
-            { text: "📊 Monitoring & Optimizing", delay: 1000 },
-            { text: "", delay: 0 },
-            { text: randomHook, delay: 0, typewriter: true },
-            { text: `<br>Get in touch: <a href="mailto:hello@umni.dev?subject=Let's%20build%20something%20great!">hello@umni.dev</a>`, delay: 0 }
-        ];
-        
-        let currentLineIndex = 0;
-        
-        function showNextResultLine() {
-            if (currentLineIndex < resultLines.length) {
-                const lineData = resultLines[currentLineIndex];
-                const lineText = lineData.text;
-                const delay = lineData.delay;
-                const useTypewriter = lineData.typewriter;
-                
-                if (lineText === "") {
-                    result.innerHTML += "<br>";
-                    currentLineIndex++;
-                    setTimeout(showNextResultLine, 200);
-                } else if (useTypewriter) {
-                    // Typewriter effect for this line
-                    const linePrefix = currentLineIndex > 0 ? "<br>" : "";
-                    result.innerHTML += linePrefix;
-                    
-                    let charIndex = 0;
-                    function typeChar() {
-                        if (charIndex < lineText.length) {
-                            // Get current HTML and add the next character
-                            const lines = result.innerHTML.split("<br>");
-                            lines[lines.length - 1] = lineText.substring(0, charIndex + 1);
-                            result.innerHTML = lines.join("<br>");
-                            charIndex++;
-                            setTimeout(typeChar, TYPING_SPEED + Math.random() * TYPING_SPEED);
-                        } else {
-                            // Finished typing this line
-                            currentLineIndex++;
-                            setTimeout(showNextResultLine, 800); // Delay before next line
-                        }
-                    }
-                    typeChar();
-                } else if (lineText.includes('<a href=')) {
-                    // Contact email - show immediately
-                    result.innerHTML += (currentLineIndex > 0 ? "<br>" : "") + lineText;
-                    currentLineIndex++;
-                } else {
-                    // Service line - show with loading then done
-                    const linePrefix = currentLineIndex > 0 ? "<br>" : "";
-                    result.innerHTML += linePrefix + lineText + "...";
-                    
-                    setTimeout(() => {
-                        // Replace the last line with "...done"
-                        const lines = result.innerHTML.split("<br>");
-                        lines[lines.length - 1] = lineText + "...done";
-                        result.innerHTML = lines.join("<br>");
-                        
-                        currentLineIndex++;
-                        setTimeout(showNextResultLine, 300);
-                    }, delay);
-                }
-            }
-        }
-        
-        // Array of font classes
-        // const fonts = ['font-bitcount', 'font-honk', 'font-inter', 'font-rubik-dirt'];
-        const fonts = ['font-bitcount'];
-        
-        // Randomly select a font
-        const randomFont = fonts[Math.floor(Math.random() * fonts.length)];
-        
-        // Apply the random font to the container
-        const container = document.querySelector('.container');
-        container.className = `container ${randomFont}`;
-        
-        const typewriter = document.getElementById('typewriter');
-        const cursor = document.getElementById('cursor');
-        const result = document.getElementById('result');
-        let i = 0;
+        // Initialize typewriter with the library
+        const typewriter = new Typewriter('#typewriter', {
+            loop: false,
+            delay: 20,
+            cursor: '|',
+            
+        });
 
-        function typeWriter() {
-            if (i < command.length) {
-                typewriter.textContent += command.charAt(i);
-                i++;
-                setTimeout(typeWriter, TYPING_SPEED + Math.random() * TYPING_SPEED);
-            } else {
-                // Command finished typing, hide cursor and show result
-                setTimeout(() => {
-                    cursor.style.display = 'none';
-                    result.classList.remove('hidden');
-                    showNextResultLine(); // Start showing result lines
-                }, DELAY_BEFORE_RESULT);
-            }
-        }
-
-        // Start typing after a short delay
-        setTimeout(typeWriter, 500);
+        // Type the selected command
+        typewriter
+            .typeString(command)
+            .start();
     </script>
+    
 </body>
 </html> 
